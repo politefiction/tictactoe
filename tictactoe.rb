@@ -59,7 +59,7 @@ class Player < TicTacBoard
 	end
 
 	def turn
-		puts "#{@player_id}'s turn. Enter placement: "
+		puts "#{@player_id}'s turn. Choose a square (e.g., A1, B2): "
 		place = gets.chomp
 
 		column = (place[1].to_i) - 1
