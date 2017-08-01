@@ -2,14 +2,21 @@ class TicTacBoard
 	@@a = ["_", "_", "_"]
 	@@b = ["_", "_", "_"]
 	@@c = ["_", "_", "_"]
-	@@col1 = [@@a[0], @@b[0], @@c[0]]
-	@@col2 = [@@a[1], @@b[1], @@c[1]]
-	@@col3 = [@@a[2], @@b[2], @@c[2]]
-	@@diag1 = [@@a[0], @@b[1], @@c[2]]
-	@@diag2 = [@@c[0], @@b[1], @@a[2]]
 	@@victory = false
 
+	# For diagonals and columns
+	def self.set_nonrows
+		@@col1 = [@@a[0], @@b[0], @@c[0]]
+		@@col1 = [@@a[0], @@b[0], @@c[0]]
+		@@col2 = [@@a[1], @@b[1], @@c[1]]
+		@@col3 = [@@a[2], @@b[2], @@c[2]]
+		@@diag1 = [@@a[0], @@b[1], @@c[2]]
+		@@diag2 = [@@c[0], @@b[1], @@a[2]]
+	end
+
+
 	def self.print_board
+		puts
 		puts "  1 2 3"
 		puts "A " + @@a.join(" ")
 		puts "B " + @@b.join(" ")
@@ -17,25 +24,25 @@ class TicTacBoard
 		puts
 	end
 
+	# Maybe a square_taken method instead?
 	def is_empty?(square)
 		if square == "_"
 			true
 		else
+			# Alright...so now, putting in a square that was already taken and then
+			# entering an empty square gives both the squares to the current player.
 			puts "Sorry, square taken."
-			turn
+			#turn
 		end
 	end
 
+	# First victory method for TicTacBoard class
 	def self.check_victory
+		TicTacBoard.set_nonrows
 		vic_array = [@@a, @@b, @@c, @@col1, @@col2, @@col3, @@diag1, @@diag2]
-		vic_array.each do |arr|
-			unless arr.include? "_"
-				if arr.min == arr.max
-					@@victory = true
-				end
-			end
-		end
+		vic_array.each { |arr| (@@victory = true if arr.min == arr.max) unless arr.include? "_" }
 	end
+	
 
 end
 
@@ -50,50 +57,55 @@ class Player < TicTacBoard
 		@letter = letter
 	end
 
+	# Second victory method for instances of Player class
 	def victory?
 		TicTacBoard.check_victory
 		if @@victory
+			TicTacBoard.print_board
 			puts "Game over! #{player_id} wins!"
 			exit
 		end
+		# consider a "Play again?" option
 	end
 
 	def turn
+		TicTacBoard.print_board
 		puts "#{@player_id}'s turn. Choose a square (e.g., A1, B2): "
 		place = gets.chomp
 
-		column = (place[1].to_i) - 1
-		case
-			when place[0].downcase == "a"
-				@@a[column] = @letter if is_empty?(@@a[column])
-			when place[0].downcase == "b"
-				@@b[column] = @letter if is_empty?(@@b[column])
-			when place[0].downcase == "c"
-				@@c[column] = @letter if is_empty?(@@c[column])
-			else
-				puts "Nope. Please try again."
-				turn
+		if place[1].nil? or place[1].to_i < 1 or place[1].to_i > 3
+			puts "Please enter a row (A, B, or C) and a column (1, 2, or 3)."
+			turn
+		else
+			column = (place[1].to_i) - 1
+			case place[0].downcase
+				when "a"
+					@@a[column] = @letter if is_empty?(@@a[column])
+				when "b"
+					@@b[column] = @letter if is_empty?(@@b[column])
+				when "c"
+					@@c[column] = @letter if is_empty?(@@c[column])
+				else
+					puts "Square does not exist. Please try again."
+					turn
+			end
+			#TicTacBoard.print_board
 		end
-		TicTacBoard.print_board
 	end
 
 	def self.game(p1, p2)
-		if p1.class != Player or p2.class != Player
-			puts "Wait a minute! This game needs two players!"
-		else
-			puts "Starting TicTacToe!"
-			while @@turns > 0
-				if @@current_turn == "X"
-					p1.turn
-					p1.victory?
-					@@turns -= 1
-					@@current_turn = "O"
-				else
-					p2.turn
-					p2.victory?
-					@@turns -=1
-					@@current_turn = "X"
-				end
+		puts "Starting TicTacToe!"
+		while @@turns > 0
+			if @@current_turn == "X"
+				p1.turn
+				p1.victory?
+				@@turns -= 1
+				@@current_turn = "O"
+			else
+				p2.turn
+				p2.victory?
+				@@turns -=1
+				@@current_turn = "X"
 			end
 		end
 		puts "Game Over! Nobody wins!"
@@ -101,9 +113,8 @@ class Player < TicTacBoard
 end
 
 
-TicTacBoard.print_board
+#TicTacBoard.print_board
 player1 = Player.new("X")
 player2 = Player.new("O")
 
 Player.game(player1, player2)
-
