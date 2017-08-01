@@ -24,15 +24,11 @@ class TicTacBoard
 		puts
 	end
 
-	# Maybe a square_taken method instead?
 	def is_empty?(square)
 		if square == "_"
 			true
 		else
-			# Alright...so now, putting in a square that was already taken and then
-			# entering an empty square gives both the squares to the current player.
-			puts "Sorry, square taken."
-			#turn
+			puts "Sorry, square taken. Please try again."
 		end
 	end
 
@@ -65,7 +61,6 @@ class Player < TicTacBoard
 			puts "Game over! #{player_id} wins!"
 			exit
 		end
-		# consider a "Play again?" option
 	end
 
 	def turn
@@ -80,16 +75,15 @@ class Player < TicTacBoard
 			column = (place[1].to_i) - 1
 			case place[0].downcase
 				when "a"
-					@@a[column] = @letter if is_empty?(@@a[column])
+					is_empty?(@@a[column]) ? @@a[column] = @letter : turn
 				when "b"
-					@@b[column] = @letter if is_empty?(@@b[column])
+					is_empty?(@@b[column]) ? @@b[column] = @letter : turn
 				when "c"
-					@@c[column] = @letter if is_empty?(@@c[column])
+					is_empty?(@@c[column]) ? @@c[column] = @letter : turn
 				else
 					puts "Square does not exist. Please try again."
 					turn
 			end
-			#TicTacBoard.print_board
 		end
 	end
 
@@ -108,12 +102,12 @@ class Player < TicTacBoard
 				@@current_turn = "X"
 			end
 		end
+		TicTacBoard.print_board
 		puts "Game Over! Nobody wins!"
 	end
 end
 
 
-#TicTacBoard.print_board
 player1 = Player.new("X")
 player2 = Player.new("O")
 
